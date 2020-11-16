@@ -14,10 +14,11 @@ class ClientGame
         ClientGame();
         ~ClientGame();
         void roop();
+        void receive();
         void input();
         void update();
         void output();
-        void updateInit();
+        void init();
         void updateGame();
 
         Player* getPlayer() { return mPlayer; }

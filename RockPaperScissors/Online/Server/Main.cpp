@@ -1,4 +1,6 @@
+#include <string>
 #include "Game.h"
+
 
 int main()
 {

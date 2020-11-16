@@ -12,14 +12,16 @@ Player::~Player()
 
 void Player::init()
 {
-    char *in;
+    char in[1024];
     bool isRoop = true;
 
    
     std::cout << " 名前を入力してね " << std::endl;
     std::cin >> in;
 
-    setName(in);
+    std::string name = in;
+    
+    setName(name);
 }
 
 void Player::input()

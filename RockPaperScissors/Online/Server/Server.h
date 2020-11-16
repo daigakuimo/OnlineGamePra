@@ -3,7 +3,7 @@
 class Server
 {
 public:
-    Server(Game *game);
+    Server(class Game *game);
     void init(int port);
     bool connect();
     void closeSocket();
@@ -15,5 +15,5 @@ private:
 
     socklen_t len = sizeof( struct sockaddr_in );
     struct sockaddr_in mFromAddr;
-    Game *mGame;
+    class Game *mGame;
 };

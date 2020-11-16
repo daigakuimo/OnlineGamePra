@@ -1,12 +1,18 @@
+#include <string>
 #include "ClientGame.h"
+#include <iostream>
+#include <nlohmann/json.hpp>
+
+// for convenience
+using json = nlohmann::json;
 
 
 ClientGame::ClientGame()
 :mIsRoop(true)
 ,mState(State::EInit)
-,mClient(new Client(2222))
+,mClient(new Client(1234))
 {
-
+    mPlayer = new Player("ena");
 }
 
 ClientGame::~ClientGame()
@@ -14,22 +20,57 @@ ClientGame::~ClientGame()
 
 }
 
-void ClientGame::updateInit()
+void ClientGame::init()
 {
     mPlayer->init();
-    int *id;
+    int id;
     mClient->init(mPlayer->getName().c_str(), id);
-    mPlayer->setID(*id);
+    mPlayer->setID(id);
+    mState = State::EGame;
 }
 
 void ClientGame::roop()
 {
     while(mIsRoop)
     {
+        receive();
         input();
-        update();
-        output();
     }
+}
+
+void ClientGame::receive()
+{
+    
+    mClient->receive();
+    std::cout << mClient->getReceiveStr() << std::endl;
+    json receiveJson = json::parse(mClient->getReceiveStr());
+
+    std::string state = receiveJson["state"];
+    if(state == "start")
+    {
+
+    }
+    else if(state == "result")
+    {
+        std::string result = receiveJson["result"];
+        if(result == "win")
+        {
+            std::cout <<  "プレイヤーの勝利 " << std::endl;
+            mIsRoop = false;
+            mState = State::EFinish;
+        }
+        else if(result == "lose")
+        {
+            std::cout <<  "プレイヤーの負け " << std::endl;
+            mIsRoop = false;
+            mState = State::EFinish;
+        }
+        else
+        {
+            std::cout <<  "あいこ" << std::endl;
+        }
+    }
+    
 }
 
 void ClientGame::input()
@@ -40,39 +81,3 @@ void ClientGame::input()
        mClient->sendHand(mPlayer->getID(), mPlayer->getHand());
     }
 }
-
-void ClientGame::update()
-{
-    if(mState == State::EInit)
-    {
-        updateInit();
-        mState = State::EGame;
-    }
-    else
-    {
-        updateGame();
-    }
-    
-}
-
-void ClientGame::output()
-{
-    if(mState == State::EInit)
-    {
-
-    }
-    else if(mState == State::EGame)
-    {
-        
-    }
-    
-}
-
-void ClientGame::updateGame()
-{
-    
-}
-
-
-
-

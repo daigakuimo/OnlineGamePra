@@ -3,7 +3,7 @@
 Player::Player(std::string name)
 :mName(name)
 {
-
+    std::cout << "create player : " << name << std::endl;
 }
 Player::~Player()
 {

@@ -5,21 +5,23 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 
-#define BUF_SIZE 1024
+#define BUF_SIZE 4096
 
 class Client
 {
 public:
     Client(int port);
     int getPort() { return mPort; }
-    void init(const char* name, int *id);
+    void init(const char* name, int &id);
     void receive();
     void sendHand(int id, int hand);
+
+    std::string getReceiveStr() { return mReceiveStr; }
 
 private:
     int mPort;
     int mSockfd;
     struct sockaddr_in mAddr;
 
-    char *mBuf[BUF_SIZE];
+    std::string mReceiveStr;
 };

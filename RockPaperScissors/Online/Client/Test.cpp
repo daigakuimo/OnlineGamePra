@@ -30,8 +30,8 @@ int main() {
     
     json sendJson;
     sendJson["state"] = "init";
-    sendJson["id"] = 1;
-    sendJson["hand"] = 0;
+    sendJson["player"]["id"] = 1;
+    sendJson["player"]["hand"] = 0;
     std::string s = sendJson.dump(); 
     const char* send_str = s.c_str();
     printf( "send:%s\n", send_str );

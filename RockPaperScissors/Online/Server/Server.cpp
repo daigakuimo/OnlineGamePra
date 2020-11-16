@@ -1,6 +1,7 @@
 #include "Server.h"
 #include <nlohmann/json.hpp>
 #include "Game.h"
+#include "Player.h"
 
 // for convenience
 using json = nlohmann::json;
@@ -47,19 +48,18 @@ bool Server::connect()
     }
 
     int rsize;
-    char *buf[BUF_SIZE];
+    char buf[BUF_SIZE];
     rsize = recv(mClientSockfd, buf, sizeof(buf),0);
 
     json receiveJson = json::parse(buf);
-    if(receiveJson["player_name"])
-    {
-        mGame->addPlayer(receiveJson["player_name"]);
-    }
+    std::string name = receiveJson["player_name"];
+    mGame->addPlayer(name);
 
     int id = 0;
     if(mGame->getPlayerCount() == 1)
     {
-        id = mGame->getPlayer1()->getID();
+        Player *temp = mGame->getPlayer1();
+        id = temp->getID();
     }
     else if(mGame->getPlayerCount() == 2)
     {

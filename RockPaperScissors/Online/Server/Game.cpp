@@ -1,4 +1,7 @@
+#include "Player.h"
+#include "Server.h"
 #include "Game.h"
+
 
 Game::Game()
 :mPlayerCount(0)
@@ -6,7 +9,7 @@ Game::Game()
 ,mState(State::EInit)
 ,mBattleCount(0)
 {
-
+    mServer = new Server(this);
 }
 
 Game::~Game()
@@ -18,7 +21,7 @@ void Game::addPlayer(std::string name)
 {
     mPlayerCount++;
 
-    if(mPlayerCount == 0)
+    if(mPlayerCount == 1)
     {
         mP1 = new Player(name);
         mP1->setID(mPlayerCount);
@@ -34,18 +37,29 @@ void Game::addPlayer(std::string name)
 
 void Game::updateInit()
 {
-    mServer->init(2222);
-    addPlayer("aya");
-    addPlayer("ena");
+    mServer->init(1234);
+    for(int i = 0; i < 2; i++)
+    {
+        mServer->connect();
+    }
 }
 
 void Game::roop()
 {
     while(mIsRoop)
     {
-        input();
+        receive();
         update();
         output();
+    }
+}
+
+void Game::receive()
+{
+    if(mState == State::EGame)
+    {
+        mP1->input();
+        mP2->input();
     }
 }
 
