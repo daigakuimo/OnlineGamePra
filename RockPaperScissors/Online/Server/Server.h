@@ -1,5 +1,7 @@
 #include "ClientProcThread.h"
 
+#define BUF_SIZE 4096
+
 class Server
 {
 public:

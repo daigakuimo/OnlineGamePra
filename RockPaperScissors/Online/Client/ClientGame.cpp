@@ -7,10 +7,10 @@
 using json = nlohmann::json;
 
 
-ClientGame::ClientGame()
+ClientGame::ClientGame(int port)
 :mIsRoop(true)
 ,mState(State::EInit)
-,mClient(new Client(1234))
+,mClient(new Client(port))
 {
     mPlayer = new Player("ena");
 }

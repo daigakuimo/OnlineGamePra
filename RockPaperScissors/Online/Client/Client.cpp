@@ -30,6 +30,8 @@ void Client::init(const char *name, int &id)
 
     printf("conneted\n");
 
+    sleep(5);
+
     // json形式でテクストデータ作成
     json j;
     j["state"] = "init";

@@ -11,7 +11,7 @@ class ClientGame
             EFinish
         };
 
-        ClientGame();
+        ClientGame(int port);
         ~ClientGame();
         void roop();
         void receive();

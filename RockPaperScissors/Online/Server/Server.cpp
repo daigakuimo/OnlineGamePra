@@ -73,7 +73,7 @@ bool Server::connect()
     std::string s = sendJson.dump(); 
     const char* sendBuf = s.c_str();
 
-    write(mClientSockfd,sendBuf,sizeof(sendBuf));
+    write(mClientSockfd,sendBuf,BUF_SIZE);
 
     return true;
 }

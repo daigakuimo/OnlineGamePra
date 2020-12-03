@@ -31,10 +31,13 @@ class Player
         void setResult(Result result) { mResult = result; }
         int getID() { return mID; }
         void setID(int id) { mID = id; }
+        int getSocket() { return mClientSockfd; }
+        void setSocket(int socket) { mClientSockfd = socket; }
         
     private:
         std::string mName;
         Hand mHand;
         Result mResult;
         int mID;
+        int mClientSockfd;
 };

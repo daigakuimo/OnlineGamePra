@@ -5,8 +5,6 @@
 #include <netinet/in.h>
 #include <unistd.h>
 
-#define BUF_SIZE 1024
-
 class ClientProcThread
 {
 public:
@@ -17,5 +15,5 @@ public:
 
 private:
     int mClientSockfd;
-    char buf[BUF_SIZE];
+    char buf[4096];
 };

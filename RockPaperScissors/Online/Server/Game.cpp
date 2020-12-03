@@ -32,15 +32,16 @@ void Game::addPlayer(std::string name)
         mP2->setID(mPlayerCount);
         mState = State::EGame;
     }
-
 }
 
 void Game::updateInit()
 {
-    mServer->init(1234);
+    int port = 1234;
     for(int i = 0; i < 2; i++)
     {
+        mServer->init(port);
         mServer->connect();
+        port++;
     }
 }
 
