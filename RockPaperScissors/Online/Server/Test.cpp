@@ -7,6 +7,8 @@
 #include <unistd.h>
 #include <nlohmann/json.hpp>
 #include <iostream>
+#include <sys/select.h>
+
 // for convenience
 using json = nlohmann::json;
 
@@ -48,14 +50,7 @@ int main()
         perror("listen");
     }
 
-    /*
-    ここで、ノンブロッキングに設定しています。
-    val = 0でブロッキングモードに設定できます。
-    ソケットの初期設定はブロッキングモードです。
-    */
-
-    int val = 1;
-    ioctl(sockfd, FIONBIO, &val);
+    
 
     // クライアントからのコネクト要求待ち
     if((client_sockfd = accept(sockfd, (struct sockaddr *)&from_addr, &len)) < 0)
@@ -64,126 +59,82 @@ int main()
     }
 
 
+
+
     // 受信
-    // int rsize;
+    int rsize;
     
-    // rsize = recv(client_sockfd, buf, sizeof(buf),0);
+    rsize = recv(client_sockfd, buf, sizeof(buf),0);
 
-    // if(rsize == 0)
-    // {
+    if(rsize == 0)
+    {
         
-    // }
-    // else if(rsize == -1)
-    // {
-    //     perror("recv");
-    // }
-    // else
-    // {
+    }
+    else if(rsize == -1)
+    {
+        perror("recv");
+    }
+    else
+    {
 
-    //     printf("receive:%s\n" , buf);
-    //     json receiveJson = json::parse(buf);
-    //     std::cout << receiveJson << std::endl; 
-    //     std::string state = receiveJson["state"];
+        printf("receive:%s\n" , buf);
+        json receiveJson = json::parse(buf);
+        std::cout << receiveJson << std::endl; 
+        std::string state = receiveJson["state"];
         
 
-    //     // 応答
-    //     printf("send id:%d\n", 1);
-    //     json sendJson;
-    //     sendJson["id"] = 1;
-    //     std::string s = sendJson.dump(); 
-    //     const char* buf = s.c_str();
-    //     write(client_sockfd,buf,rsize);
+        // 応答
+        printf("send id:%d\n", 1);
+        json sendJson;
+        sendJson["id"] = 1;
+        std::string s = sendJson.dump(); 
+        const char* buf = s.c_str();
+        write(client_sockfd,buf,rsize);
 
-    // }   
+    }   
 
-    // json sJson;
-    // sJson["state"] = "start";
-    // std::string si = sJson.dump(); 
-    // const char* sbuf = si.c_str();
-    // write(client_sockfd,sbuf,1024);
+    json sJson;
+    sJson["state"] = "start";
+    std::string si = sJson.dump(); 
+    const char* sbuf = si.c_str();
+    write(client_sockfd,sbuf,1024);
 
-    // std::cout << sbuf << std::endl; 
-
-    // while(1)
-    // {
-    //     char b[1024];
-    //     rsize = recv(client_sockfd, b, sizeof(b),0);
-
-    //     if(rsize == 0)
-    //     {
-    //         break;
-    //     }
-    //     else if(rsize == -1)
-    //     {
-    //         perror("recv");
-    //     }
-    //     else
-    //     {
-    //         printf("receive:%s\n" , b);
-    //         if(b[0] != '\0')
-    //         {
-    //             json receiveJson = json::parse(b);
-    //             std::cout << receiveJson << std::endl; 
-    //             std::string state = receiveJson["state"];
-                
-    //             // 応答
-    //             printf("send id:%d\n", 1);
-    //             json j;
-    //             j["state"] = "result";
-    //             j["result"] = "draw";
-    //             std::string s = j.dump(); 
-    //             const char* sendBuf = s.c_str();
-    //             write(client_sockfd,sendBuf,rsize);
-    //         }
-    //     }   
-    // }
+    std::cout << sbuf << std::endl; 
 
     while(1)
     {
-        int rsize;
-        memset(buf, 0, sizeof(buf));
-        rsize = recv(client_sockfd, buf, sizeof(buf),0);
+        char b[1024];
+        rsize = recv(client_sockfd, b, sizeof(b),0);
 
-        if(rsize < 1)
+        if(rsize == 0)
         {
-            if (errno == EAGAIN) 
-            {
-                /* まだ来ない。*/
-                printf("Has not come yet\n");
-            } else 
-            {
-                perror("recv");
-                
-            }
+            break;
+        }
+        else if(rsize == -1)
+        {
+            perror("recv");
         }
         else
         {
-
-            printf("receive:%s\n" , buf);
-            json receiveJson = json::parse(buf);
-            std::cout << receiveJson << std::endl; 
-            std::string state = receiveJson["state"];
-            
-
-            // 応答
-            printf("send id:%d\n", 1);
-            json sendJson;
-            sendJson["id"] = 1;
-            std::string s = sendJson.dump(); 
-            const char* buf = s.c_str();
-            write(client_sockfd,buf,rsize);
-            break;
-
-        } 
-        /* とりあえず一秒待ってみる */
-	    sleep(1);
+            printf("receive:%s\n" , b);
+            if(b[0] != '\0')
+            {
+                json receiveJson = json::parse(b);
+                std::cout << receiveJson << std::endl; 
+                std::string state = receiveJson["state"];
+                
+                // 応答
+                printf("send id:%d\n", 1);
+                json j;
+                j["state"] = "result";
+                j["result"] = "draw";
+                std::string s = j.dump(); 
+                const char* sendBuf = s.c_str();
+                write(client_sockfd,sendBuf,rsize);
+            }
+        }   
     }
 
-    
-
-
-
-    
 
     // ソケットクローズ
     close(client_sockfd);
