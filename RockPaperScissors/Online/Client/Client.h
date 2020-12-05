@@ -23,6 +23,12 @@ private:
     int mPort;
     int mSockfd;
     struct sockaddr_in mAddr;
+    
+    int     cnt;
+    int     mMaxfd;          // ディスクリプタの最大値
+    fd_set  mRfds;           // 接続待ち、受信待ちをするディスクリプタの集合
+    fd_set  mSfds;           // 送信待ちをするディスクリプタの集合
+    struct  timeval  mTv;    // タイムアウト時間
 
     std::string mReceiveStr;
 };
