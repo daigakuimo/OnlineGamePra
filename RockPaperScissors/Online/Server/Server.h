@@ -19,14 +19,19 @@ public:
     Server();
     void init(int port);
     void recvLoop();
-    bool connect(int index);
-    bool sendRoomInfo();
-    std::vector<Room> getRoomInfo();
-    bool sendAll();
-    bool sendSelectMember();
     void closeSocket();
 
+private:
+    bool sendRoomList();
+    bool sendRoomInfo(int sendToFd);
+    std::vector<Room> getRoomInfo();
+
+
 protected:
+    bool connect(int index);
+    bool sendAll();
+    bool sendSelectMember();
+
     int mSockfd;
     std::vector<int> mClientSockfds;
     struct sockaddr_in mAddr;

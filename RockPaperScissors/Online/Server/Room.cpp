@@ -1,10 +1,10 @@
-#include "Server.h"
+#include "Room.h"
 #include <nlohmann/json.hpp>
 
 // for convenience
 using json = nlohmann::json;
 
-Server::Server()
+Room::Room()
 {
 }
 
@@ -132,53 +132,4 @@ bool Server::connect(int index)
     }
 
     return true;
-}
-
-bool Server::sendRoomInfo(int sendToFd)
-{
-    // クライアントからのコネクト要求待ち
-    json sendJson;
-    sendJson["function_type"] = "Room";
-    sendJson["function_name"] = "sendRoomInfo";
-    sendJson["owner"] = 0;
-    sendJson["send_to"] = sendToFd;
-    sendJson["data"]["port"] = 1235;
-
-    std::string s = sendJson.dump();
-    const char *sendBuf = s.c_str();
-
-    write(sendToFd, sendBuf, BUF_SIZE);
-
-    return true;
-}
-
-bool Server::sendRoomList()
-{
-
-    return true;
-}
-
-std::vector<Room> Server::getRoomInfo()
-{
-
-    return null;
-}
-
-bool Server::sendAll()
-{
-
-    return true;
-}
-
-bool Server::sendSelectMember()
-{
-
-    return true;
-}
-
-
-void Server::closeSocket()
-{
-    // ソケットクローズ
-    close(mSockfd);
 }
