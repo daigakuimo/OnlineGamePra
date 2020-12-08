@@ -1,5 +1,6 @@
 #include "Server.h"
 #include <nlohmann/json.hpp>
+#include "Room.h"
 
 // for convenience
 using json = nlohmann::json;
@@ -34,7 +35,7 @@ void Server::init(int port)
     }
 }
 
-void recvLoop()
+void Server::recvLoop()
 {
     int maxFd;         // ディスクリプタの最大値
     fd_set rFds;       // 接続待ち、受信待ちをするディスクリプタの集合
@@ -44,8 +45,8 @@ void recvLoop()
     {
         // 接続待ちのディスクリプタをディスクリプタ集合に設定する
         FD_ZERO(&rFds);
-        FD_SET(sockfd, &rFds);
-        maxFd = sockfd;
+        FD_SET(mSockfd, &rFds);
+        maxFd = mSockfd;
 
         // 受信待ちのディスクリプタをディスクリプタ集合に設定する
         for (int i = 0; i < mClientSockfds.size(); i++)
@@ -62,6 +63,8 @@ void recvLoop()
         tv.tv_sec = 0;
         tv.tv_usec = 0;
 
+        int cnt;
+
         cnt = select(maxFd + 1, &rFds, NULL, NULL, &tv);
         if (cnt < 0)
         {
@@ -77,7 +80,7 @@ void recvLoop()
         else
         {
             // 接続待ちディスクリプタに接続があるか調べる
-            if (FD_ISSET(sockfd, &rFds))
+            if (FD_ISSET(mSockfd, &rFds))
             {
                 for (int i = 0; i < mClientSockfds.size(); i++)
                 {
@@ -98,6 +101,7 @@ void recvLoop()
             {
                 if (FD_ISSET(mClientSockfds[i], &rFds))
                 {
+                    char buf[BUF_SIZE];
                     // データがあるならパケット受信する
                     cnt = recv(mClientSockfds[i], buf, sizeof(buf), 0);
                     if (cnt > 0)
@@ -125,7 +129,7 @@ void recvLoop()
 bool Server::connect(int index)
 {
     // クライアントからのコネクト要求待ち
-    if ((mClientSockfds[index] = accept(mSockfd, (struct sockaddr *)&mFromAddrs[i], &len)) < 0)
+    if ((mClientSockfds[index] = accept(mSockfd, (struct sockaddr *)&mFromAddrs[index], &len)) < 0)
     {
         perror("error connect");
         return false;
@@ -158,19 +162,19 @@ bool Server::sendRoomList()
     return true;
 }
 
-std::vector<Room> Server::getRoomInfo()
+std::vector<class Room> Server::getRoomInfo()
 {
-
-    return null;
+    std::vector<class Room> temp;
+    return temp;
 }
 
-bool Server::sendAll()
+bool Server::sendAll(const char *sendBuf, int size)
 {
 
     return true;
 }
 
-bool Server::sendSelectMember()
+bool Server::sendSelectMember(const char *sendBuf, int size)
 {
 
     return true;

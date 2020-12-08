@@ -9,7 +9,6 @@
 #include <iostream>
 #include <sys/select.h>
 #include <vector>
-#include "Room.h"
 
 #define BUF_SIZE 4096
 
@@ -24,13 +23,13 @@ public:
 private:
     bool sendRoomList();
     bool sendRoomInfo(int sendToFd);
-    std::vector<Room> getRoomInfo();
+    std::vector<class Room> getRoomInfo();
 
 
 protected:
     bool connect(int index);
-    bool sendAll();
-    bool sendSelectMember();
+    bool sendAll(const char *sendBuf, int size);
+    bool sendSelectMember(const char *sendBuf, int size);
 
     int mSockfd;
     std::vector<int> mClientSockfds;

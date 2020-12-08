@@ -14,7 +14,7 @@ private:
     int mRoomId;
 
 protected:
-    bool connect();
-    bool sendAll();
-    bool sendSelectMember();
+    bool connect(int index);
+    bool sendAll(const char *sendBuf, int size);
+    bool sendSelectMember(const char *sendBuf, int size);
 };

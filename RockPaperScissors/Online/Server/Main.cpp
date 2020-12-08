@@ -1,11 +1,11 @@
 #include <string>
-#include "Game.h"
-
+#include "Room.h"
 
 int main()
 {
-    Game *game = new Game();
-    game->roop();
+    Room *room = new Room();
+    room->init(1234);
+    room->recvLoop();
 
     return 0;
 }
