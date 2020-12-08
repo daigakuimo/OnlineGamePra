@@ -6,10 +6,6 @@ using json = nlohmann::json;
 
 Room::Room()
 {
-    for ( int i = 0; i < mClientSockfds.size(); i++ )
-    {
-        mClientSockfds[i] = -1;
-    }
 }
 
 void Room::init(int port)
@@ -36,6 +32,7 @@ void Room::init(int port)
     {
         perror("listen");
     }
+    printf("init finish\n");
 }
 
 void Room::recvLoop()
@@ -43,6 +40,8 @@ void Room::recvLoop()
     int maxFd;         // ディスクリプタの最大値
     fd_set rFds;       // 接続待ち、受信待ちをするディスクリプタの集合
     struct timeval tv; // タイムアウト時間
+
+    printf("start\n");
 
     while (1)
     {
@@ -85,19 +84,13 @@ void Room::recvLoop()
             // 接続待ちディスクリプタに接続があるか調べる
             if (FD_ISSET(mSockfd, &rFds))
             {
-                for (int i = 0; i < mClientSockfds.size(); i++)
+                if (!connect())
                 {
-                    if (mClientSockfds[i] == -1)
-                    {
-                        if (!connect(i))
-                        {
-                            perror("error accept");
-                        }
-
-                        printf("socket[%d] connected\n", mClientSockfds[i]);
-                        break;
-                    }
+                    perror("error accept");
                 }
+
+                printf("socket[%d] connected\n", mClientSockfds.back());
+                        
             }
 
             for (int i = 0; i < mClientSockfds.size(); i++)
@@ -129,14 +122,19 @@ void Room::recvLoop()
     }
 }
 
-bool Room::connect(int index)
+bool Room::connect()
 {
     // クライアントからのコネクト要求待ち
-    if ((mClientSockfds[index] = accept(mSockfd, (struct sockaddr *)&mFromAddrs[index], &len)) < 0)
+    int fd;
+    struct sockaddr_in addr;
+    if ((fd = accept(mSockfd, (struct sockaddr *)&addr, &len)) < 0)
     {
         perror("error connect");
         return false;
     }
+
+    mClientSockfds.emplace_back(fd);
+    mFromAddrs.emplace_back(addr);
 
     return true;
 }
@@ -145,18 +143,45 @@ bool Room::sendAll(const char *sendBuf, int size)
 {
     for (int i = 0; i < mClientSockfds.size(); i++)
     {
-        int sendMsgSize;
-        if ((sendMsgSize = send(mClientSockfds[i], sendBuf, size, 0)) < 0)
+        if(mClientSockfds[i] != -1)
         {
-            perror("send() failed.");
-            return false;
+            int sendMsgSize;
+            if ((sendMsgSize = send(mClientSockfds[i], sendBuf, size, 0)) < 0)
+            {
+                perror("send() failed.");
+                return false;
+            }
+            else if (sendMsgSize == 0)
+            {
+                fprintf(stderr, "connection closed by foreign host.\n");
+                close(mClientSockfds[i]);
+                mClientSockfds[i] = -1;
+                return false;
+            }
         }
-        else if (sendMsgSize == 0)
+    }
+    return true;
+}
+
+bool Room::sendExceptOwner(const char *sendBuf, int size, int owner)
+{
+    for (int i = 0; i < mClientSockfds.size(); i++)
+    {
+        if(mClientSockfds[i] != owner && mClientSockfds[i] != -1)
         {
-            fprintf(stderr, "connection closed by foreign host.\n");
-            close(mClientSockfds[i]);
-            mClientSockfds[i] = -1;
-            return false;
+            int sendMsgSize;
+            if ((sendMsgSize = send(mClientSockfds[i], sendBuf, size, 0)) < 0)
+            {
+                perror("send() failed.");
+                return false;
+            }
+            else if (sendMsgSize == 0)
+            {
+                fprintf(stderr, "connection closed by foreign host.\n");
+                close(mClientSockfds[i]);
+                mClientSockfds[i] = -1;
+                return false;
+            }
         }
     }
     return true;
