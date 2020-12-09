@@ -12,29 +12,32 @@
 
 #define BUF_SIZE 4096
 
-class Server
+namespace SousUnToit
 {
-public:
-    Server();
-    void init(int port);
-    void recvLoop();
-    void closeSocket();
 
-private:
-    bool sendRoomList();
-    bool sendRoomInfo(int sendToFd);
-    std::vector<class Room> getRoomInfo();
+    class Server
+    {
+    public:
+        Server();
+        void init(int port);
+        void recvLoop();
+        void closeSocket();
 
+    private:
+        bool sendRoomList();
+        bool sendRoomInfo(int sendToFd);
+        std::vector<class Room> getRoomInfo();
 
-protected:
-    bool connect(int index);
-    bool sendAll(const char *sendBuf, int size);
-    bool sendSelectMember(const char *sendBuf, int size);
+    protected:
+        bool connect(int index);
+        bool sendAll(const char *sendBuf, int size);
+        bool sendSelectMember(const char *sendBuf, int size);
 
-    int mSockfd;
-    std::vector<int> mClientSockfds;
-    struct sockaddr_in mAddr;
+        int mSockfd;
+        std::vector<int> mClientSockfds;
+        struct sockaddr_in mAddr;
 
-    socklen_t len = sizeof(struct sockaddr_in);
-    std::vector<struct sockaddr_in> mFromAddrs;
-};
+        socklen_t len = sizeof(struct sockaddr_in);
+        std::vector<struct sockaddr_in> mFromAddrs;
+    };
+} // namespace SousUnToit

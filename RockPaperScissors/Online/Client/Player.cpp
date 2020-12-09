@@ -1,52 +1,48 @@
 #include "Player.h"
 
 Player::Player(std::string name)
-:mName(name)
+    : mName(name)
 {
-
 }
 Player::~Player()
 {
-    
 }
 
 void Player::init()
 {
     char in[1024];
-    bool isRoop = true;
+    bool isLoop = true;
 
-   
     std::cout << " 名前を入力してね " << std::endl;
     std::cin >> in;
 
     std::string name = in;
-    
+
     setName(name);
 }
 
 void Player::input()
 {
     char in;
-    bool isRoop = true;
+    bool isLoop = true;
 
-    while(isRoop)
+    while (isLoop)
     {
         std::cout << mName << " : グー（０）、　パー（１）、チョキ（２）のどれかを入力してね" << std::endl;
         std::cin >> in;
 
-        if(std::isdigit(static_cast<unsigned char>(in)))
+        if (std::isdigit(static_cast<unsigned char>(in)))
         {
             int intHand = in - '0';
-            if(intHand >= 0 && intHand <= 2)
+            if (intHand >= 0 && intHand <= 2)
             {
                 setHand((Hand)intHand);
-                isRoop = false;
+                isLoop = false;
             }
         }
         else
         {
             std::cout << " 不正な入力です。もう一度入力してね" << std::endl;
-        }   
+        }
     }
 }
-

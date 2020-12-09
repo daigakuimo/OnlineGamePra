@@ -3,7 +3,7 @@
 
 int main()
 {
-    Room *room = new Room();
+    SousUnToit::Room *room = new SousUnToit::Room();
     room->init(1234);
     room->recvLoop();
 
