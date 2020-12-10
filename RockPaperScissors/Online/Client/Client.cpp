@@ -121,7 +121,8 @@ namespace SousUnToit
         sendJson["function_name"] = "sendSelectMember";
         sendJson["owner"] = 0;
         sendJson["send_to"] = sendToList;
-        sendJson["data"] = sendData;
+        json sendDataJson = json::parse(sendData);
+        sendJson["data"] = sendDataJson;
 
         std::string s = sendJson.dump();
         const char *sendBuf = s.c_str();
